@@ -1,5 +1,6 @@
 import data from "../data/data.js";
-// const data = JSON.parse(dataJson)
+
+
 
 // jsx fucntion
 function creatSlaydCard(arr, boxs, re='') {
@@ -7,31 +8,32 @@ function creatSlaydCard(arr, boxs, re='') {
     let count = 0
     arr.map(item => {
         count ++
-        if(count <= 7){
-          const creatItem = document.createElement('a');
-          creatItem.classList.add('slayd_card');
-          creatItem.id = 'item' + re + count;
-          creatItem.href = 'move.html';
-          creatItem.innerHTML = ` 
-          <div class="slayd_item">
-              <img src="${item.img}" alt="">
-              <div class="slayd_card-content">
-                    <h5 class="slayd_card-title">${item.title}</h5>
-                    <div>
-                        <p class="slayd_card-genres">${item.genres}</p>
-                        <p class="slayd_card-year">${item.year}</p>
-                    </div>
-              </div>
-          </div>`
-          slaydBox.append(creatItem)
+        if(count > 7){
+            return
         }
+        const creatItem = document.createElement('a');
+        creatItem.dataset.id = item.id
+        creatItem.dataset.catigory = item.catigory
+        creatItem.classList.add('slayd_card');
+        creatItem.id = 'item' + re + count;
+        creatItem.href = 'move.html';
+        creatItem.innerHTML = ` 
+        <div class="slayd_item">
+            <img src="${item.img}" alt="">
+            <div class="slayd_card-content">
+                  <h5 class="slayd_card-title">${item.title}</h5>
+                  <div>
+                      <p class="slayd_card-genres">${item.genres}</p>
+                      <p class="slayd_card-year">${item.year}</p>
+                  </div>
+            </div>
+        </div>`
+        slaydBox.append(creatItem)
     })
 }
-creatSlaydCard(data.films ,'film_card-slayd')
-creatSlaydCard(data.serials , 'serial_card-slayd','Re')
-creatSlaydCard(data.anime, 'anime_card-slayd')
-
-
+creatSlaydCard(data.films ,'film_card-slayd');
+creatSlaydCard(data.serials , 'serial_card-slayd','Re');
+creatSlaydCard(data.anime, 'anime_card-slayd');
 
 // DOM
 const filmSlaydCards = document.querySelector('.film_card-slayd').querySelectorAll('.slayd_card');
@@ -41,8 +43,8 @@ const cartonSlaydCards = document.querySelector('.carton_card-slayd').querySelec
 const recapSlaydCards = document.querySelector('.recap_card-slayd').querySelectorAll('.slayd_card');
 const navSearchLink = document.querySelector('.nav_search-link');
 const navbarInput = document.querySelector('.navbar_input');
-
-const navLinks = document.querySelectorAll('.nav_links')
+const navLinks = document.querySelectorAll('.nav_links');
+const slaydCards = document.querySelectorAll('.slayd_card');
 
 // Event
 navSearchLink.addEventListener('click', () => {
@@ -51,8 +53,14 @@ navSearchLink.addEventListener('click', () => {
 navLinks.forEach(link =>{
     link.addEventListener('click',pullDataCatigory)
 })
-
-
+slaydCards.forEach(item =>{
+    item.addEventListener('click',function(){
+        let catigory = item.dataset.catigory;
+        let id = item.dataset.id;
+        let value = data[catigory].find((el)=>el.id == id)
+        localStorage.setItem('moveItem',JSON.stringify(value))
+    })
+})
 // function
 function eventSlayder(slaydBoxCards) {
     slaydBoxCards.forEach(function (card) {
@@ -67,7 +75,6 @@ function eventSlayder(slaydBoxCards) {
 function pullDataCatigory(){
     localStorage.setItem('catigory', this.dataset.catigory)
 }
-
 // setInterval
 setInterval(() => {
     eventSlayder(filmSlaydCards)
@@ -88,3 +95,4 @@ setInterval(() => {
 setInterval(() => {
     eventSlayder(recapSlaydCards)
 }, 7500);
+
