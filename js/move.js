@@ -4,6 +4,8 @@ const navbarInput = document.querySelector('.navbar_input');
 const navLinks = document.querySelectorAll('.nav_links');
 const header = document.querySelector('.header');
 let itemObj = JSON.parse(localStorage.getItem('moveItem'));
+const burger = document.querySelector('.burger');
+const navbarMobileContent = document.querySelector('.navbar_mobile-content');
 
 // jsx
 function creatHeader(){
@@ -28,7 +30,8 @@ function creatHeader(){
             </div>
             <div class="head_description">
                 <ul>Опсисания:</ul>
-                <p class="head_description-volue">${itemObj.summary}</p>
+                <img class="burger_summary" src="Icons/left-chevron.png">
+                <li class="head_description-volue">${itemObj.summary}</li>
             </div>
         </div>
     </div>
@@ -36,13 +39,24 @@ function creatHeader(){
 }
 creatHeader()
 
+// jsxDom
+const burgerSummary = document.querySelector('.burger_summary');
+const headSummary = document.querySelector('.head_description-volue');
+
 // Event
 navSearchLink.addEventListener('click', () => {
-    navbarInput.classList.toggle('input_active')
+    navbarInput.classList.toggle('input_active');
 })
 navLinks.forEach(link =>{
-    link.addEventListener('click',pullDataCatigory)
+    link.addEventListener('click',pullDataCatigory);
 })
+burgerSummary.addEventListener('click', () => {
+    headSummary.classList.toggle('flex');
+})
+burger.addEventListener('click',() =>{
+    navbarMobileContent.classList.toggle('nav_mobile-active')
+})
+
 
 // function
 function pullDataCatigory(){

@@ -1,7 +1,5 @@
 import data from "../data/data.js";
 
-
-
 // jsx fucntion
 function creatSlaydCard(arr, boxs, re='') {
     const slaydBox = document.querySelector(`.${boxs}`);
@@ -45,9 +43,12 @@ const navSearchLink = document.querySelector('.nav_search-link');
 const navbarInput = document.querySelector('.navbar_input');
 const navLinks = document.querySelectorAll('.nav_links');
 const slaydCards = document.querySelectorAll('.slayd_card');
+const burger = document.querySelector('.burger');
+const navbarMobileContent = document.querySelector('.navbar_mobile-content');
+
 
 // Event
-navSearchLink.addEventListener('click', () => {
+navSearchLink.addEventListener('click', () =>{
     navbarInput.classList.toggle('input_active')
 })
 navLinks.forEach(link =>{
@@ -60,6 +61,9 @@ slaydCards.forEach(item =>{
         let value = data[catigory].find((el)=>el.id == id)
         localStorage.setItem('moveItem',JSON.stringify(value))
     })
+})
+burger.addEventListener('click',() =>{
+    navbarMobileContent.classList.toggle('nav_mobile-active')
 })
 // function
 function eventSlayder(slaydBoxCards) {
