@@ -37,7 +37,7 @@ function creatItemList(catigory){
     const itemContainer = document.querySelector('.item_container');
     data[catigory].map(item => {
         const creatElem = document.createElement('a');
-        creatElem.dataset.id = item.id
+        creatElem.dataset.id = item.id;
         creatElem.dataset.catigory = item.catigory
         creatElem.classList.add('item');
         creatElem.href = 'move.html';
