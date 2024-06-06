@@ -1,4 +1,11 @@
 import data from "../data/data.js";
+const itemObj = {}
+
+
+
+
+
+
 
 
 // jsx fucntion
@@ -30,12 +37,26 @@ function creatSlaydCard(catigory,boxs,re='') {
                   </div>
             </div>
         </div>`
+        creatItem.addEventListener('click', parseCard)
         slaydBox.append(creatItem)
     })
 }
-function creatItemList(catigory){
+function itemParsePages(catigory){
+    let count = 1
+    itemObj['itemPage'+count] = [];
+
+    data[catigory].forEach(item=>{
+        if(itemObj['itemPage'+count].length >= 4){
+            count++
+            itemObj['itemPage'+count] = []
+        }
+        itemObj['itemPage'+count].push(item)
+    })
+}
+function creatItemList(i = 1){
     const itemContainer = document.querySelector('.item_container');
-    data[catigory].map(item => {
+    itemContainer.innerHTML = ''
+    itemObj['itemPage' + i].map(item => {
         const creatElem = document.createElement('a');
         creatElem.dataset.id = item.id;
         creatElem.dataset.catigory = item.catigory
@@ -53,20 +74,42 @@ function creatItemList(catigory){
             </div> 
         </div>
         `;
+        creatElem.addEventListener('click', parseCard)
         itemContainer.append(creatElem)
     })
 }
-creatSlaydCard(localStorage.getItem('catigory'))
-creatItemList(localStorage.getItem('catigory'))
+function creatPageNumber(length){
+    const pageControlsNum = document.querySelector('.page_controls-num');
+    for(let num = 1;num<=length;num++){
+        const itemNum = document.createElement('div');
+        itemNum.dataset.pageid = num;
+        itemNum.innerHTML = num;
+        itemNum.addEventListener('click',itemNumPageEvent);
+        pageControlsNum.append(itemNum)
+    }
+}
+creatSlaydCard(localStorage.getItem('catigory'));
+itemParsePages(localStorage.getItem('catigory'));
+creatItemList()
+const itemObjLength = Object.keys(itemObj).length;
+creatPageNumber(itemObjLength)
+
+
+
+
 
 // DOM
-const slaydCards = document.querySelectorAll('.slayd_card');
+const slaydCards = document.querySelectorAll('.slayd_card')
 const navSearchLink = document.querySelector('.nav_search-link');
 const navbarInput = document.querySelector('.navbar_input');
 const navLinks = document.querySelectorAll('.nav_links');
-const cardsItem = document.querySelectorAll('.item');
 const burger = document.querySelector('.burger');
 const navbarMobileContent = document.querySelector('.navbar_mobile-content');
+const pageBtnPlus = document.querySelector('.page_btn-plus');
+const pageBtnMinus = document.querySelector('.page_btn-minus');
+// 
+let countPageii = 1
+
 
 // Event
 navSearchLink.addEventListener('click', () => {
@@ -75,10 +118,24 @@ navSearchLink.addEventListener('click', () => {
 navLinks.forEach(link =>{
     link.addEventListener('click',pullDataCatigory)
 })
-slaydCards.forEach(item =>{parseCard(item)})
-cardsItem.forEach(item =>{parseCard(item)})
 burger.addEventListener('click',() =>{
     navbarMobileContent.classList.toggle('nav_mobile-active')
+})
+pageBtnPlus.addEventListener('click',() => {
+    if(countPageii >= itemObjLength){
+        countPageii = 1
+        return creatItemList(countPageii)
+    }
+    countPageii++
+    creatItemList(countPageii)
+})
+pageBtnMinus.addEventListener('click',() => {
+    if(countPageii <= 1){
+        countPageii = itemObjLength
+        return creatItemList(countPageii)
+    }
+    countPageii--
+    creatItemList(countPageii)
 })
 
 // function
@@ -95,14 +152,16 @@ function eventSlayder(slaydBoxCards) {
 function pullDataCatigory(){
     localStorage.setItem('catigory', this.dataset.catigory)
 }
-function parseCard(item){
-    item.addEventListener('click',function(){
-        let catigory = item.dataset.catigory
-        let id = item.dataset.id
-        let value = data[catigory].find((el)=>el.id == id)
-        localStorage.setItem('moveItem',JSON.stringify(value))
-    })
+function parseCard(){
+    let catigory = this.dataset.catigory
+    let id = this.dataset.id
+    let value = data[catigory].find((el)=>el.id == id)
+    localStorage.setItem('moveItem',JSON.stringify(value))
 }
+function itemNumPageEvent(){
+   creatItemList(+this.dataset.pageid)
+}
+
 
 // Interval
 setInterval(() => {

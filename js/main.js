@@ -26,6 +26,7 @@ function creatSlaydCard(arr, boxs, re='') {
                   </div>
             </div>
         </div>`
+        creatItem.addEventListener('click', slaydDataPush)
         slaydBox.append(creatItem)
     })
 }
@@ -54,14 +55,6 @@ navSearchLink.addEventListener('click', () =>{
 navLinks.forEach(link =>{
     link.addEventListener('click',pullDataCatigory)
 })
-slaydCards.forEach(item =>{
-    item.addEventListener('click',function(){
-        let catigory = item.dataset.catigory;
-        let id = item.dataset.id;
-        let value = data[catigory].find((el)=>el.id == id)
-        localStorage.setItem('moveItem',JSON.stringify(value))
-    })
-})
 burger.addEventListener('click',() =>{
     navbarMobileContent.classList.toggle('nav_mobile-active')
 })
@@ -78,6 +71,12 @@ function eventSlayder(slaydBoxCards) {
 }
 function pullDataCatigory(){
     localStorage.setItem('catigory', this.dataset.catigory)
+}
+function slaydDataPush(){
+    let catigory = this.dataset.catigory;
+    let id = this.dataset.id;
+    let value = data[catigory].find((el)=>el.id == id)
+    localStorage.setItem('moveItem',JSON.stringify(value))
 }
 // setInterval
 setInterval(() => {
