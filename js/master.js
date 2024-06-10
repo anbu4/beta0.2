@@ -170,8 +170,10 @@ function pullDataCatigory(){
     localStorage.setItem('genre','');
 }
 function pullDataGenre(){
+    if(this.dataset.catigory == undefined){
+        return localStorage.setItem('genre', this.dataset.genre)
+    }
     localStorage.setItem('catigory', this.dataset.catigory)
-    localStorage.setItem('genre', this.dataset.genre)
 }
 function parseCard(){
     let catigory = this.dataset.catigory
