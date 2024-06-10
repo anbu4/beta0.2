@@ -1,5 +1,6 @@
 import data from "../data/data.js";
 
+
 // jsx fucntion
 function creatSlaydCard(arr, boxs, re='') {
     const slaydBox = document.querySelector(`.${boxs}`);
@@ -11,17 +12,17 @@ function creatSlaydCard(arr, boxs, re='') {
         }
         const creatItem = document.createElement('a');
         creatItem.dataset.id = item.id
-        creatItem.dataset.catigory = item.catigory
+        creatItem.dataset.catigory = item.category
         creatItem.classList.add('slayd_card');
         creatItem.id = 'item' + re + count;
         creatItem.href = 'move.html';
         creatItem.innerHTML = ` 
         <div class="slayd_item">
-            <img src="${item.img}" alt="">
+            <img src="${item.slaydImg}" alt="">
             <div class="slayd_card-content">
                   <h5 class="slayd_card-title">${item.title}</h5>
                   <div>
-                      <p class="slayd_card-genres">${item.genres}</p>
+                      <p class="slayd_card-genres">${item.genre[0]}, ${item.genre[1]}</p>
                       <p class="slayd_card-year">${item.year}</p>
                   </div>
             </div>
@@ -30,8 +31,8 @@ function creatSlaydCard(arr, boxs, re='') {
         slaydBox.append(creatItem)
     })
 }
-creatSlaydCard(data.films ,'film_card-slayd');
-creatSlaydCard(data.serials , 'serial_card-slayd','Re');
+creatSlaydCard(data.film ,'film_card-slayd');
+creatSlaydCard(data.serial , 'serial_card-slayd','Re');
 creatSlaydCard(data.anime, 'anime_card-slayd');
 
 // DOM
@@ -43,7 +44,7 @@ const recapSlaydCards = document.querySelector('.recap_card-slayd').querySelecto
 const navSearchLink = document.querySelector('.nav_search-link');
 const navbarInput = document.querySelector('.navbar_input');
 const navLinks = document.querySelectorAll('.nav_links');
-const slaydCards = document.querySelectorAll('.slayd_card');
+const genreBtn = document.querySelectorAll('.genre_btn');
 const burger = document.querySelector('.burger');
 const navbarMobileContent = document.querySelector('.navbar_mobile-content');
 
@@ -54,6 +55,9 @@ navSearchLink.addEventListener('click', () =>{
 })
 navLinks.forEach(link =>{
     link.addEventListener('click',pullDataCatigory)
+})
+genreBtn.forEach(btn =>{
+    btn.addEventListener('click', pullDataGenre)
 })
 burger.addEventListener('click',() =>{
     navbarMobileContent.classList.toggle('nav_mobile-active')
@@ -71,6 +75,11 @@ function eventSlayder(slaydBoxCards) {
 }
 function pullDataCatigory(){
     localStorage.setItem('catigory', this.dataset.catigory)
+    localStorage.setItem('genre','')
+}
+function pullDataGenre(){
+    localStorage.setItem('catigory', this.dataset.catigory)
+    localStorage.setItem('genre', this.dataset.genre)
 }
 function slaydDataPush(){
     let catigory = this.dataset.catigory;

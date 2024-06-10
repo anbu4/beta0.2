@@ -1,8 +1,4 @@
 import data from "../data/data.js";
-const itemObj = {}
-
-
-
 
 
 
@@ -22,35 +18,48 @@ function creatSlaydCard(catigory,boxs,re='') {
         }
         const creatItem = document.createElement('a');
         creatItem.dataset.id = item.id
-        creatItem.dataset.catigory = item.catigory
+        creatItem.dataset.catigory = item.category
         creatItem.classList.add('slayd_card');
         creatItem.id = 'item' + re + count;
         creatItem.href = 'move.html';
         creatItem.innerHTML = ` 
         <div class="slayd_item">
-            <img src="${item.img}" alt="">
-            <div class="slayd_card-content">
-                  <h5 class="slayd_card-title">${item.title}</h5>
-                  <div>
-                      <p class="slayd_card-genres">${item.genres}</p>
-                      <p class="slayd_card-year">${item.year}</p>
-                  </div>
-            </div>
+        <img src="${item.slaydImg}" alt="">
+        <div class="slayd_card-content">
+        <h5 class="slayd_card-title">${item.title}</h5>
+        <div>
+        <p class="slayd_card-genres">${item.genre[0]}, ${item.genre[1]}</p>
+        <p class="slayd_card-year">${item.year}</p>
+        </div>
+        </div>
         </div>`
         creatItem.addEventListener('click', parseCard)
         slaydBox.append(creatItem)
     })
 }
-function itemParsePages(catigory){
+const itemObj = {}
+function itemParsePages(catigory, genre){
     let count = 1
     itemObj['itemPage'+count] = [];
 
+    if(genre == '' ||genre == null){
+        data[catigory].forEach(item=>{
+            if(itemObj['itemPage'+count].length >= 4){
+                count++
+                itemObj['itemPage'+count] = []
+            }
+            itemObj['itemPage'+count].push(item)
+        })
+        return
+    }
+
     data[catigory].forEach(item=>{
+        let v = item.genre.find(el=>el==genre);
         if(itemObj['itemPage'+count].length >= 4){
             count++
             itemObj['itemPage'+count] = []
         }
-        itemObj['itemPage'+count].push(item)
+        if(v){itemObj['itemPage'+count].push(item)}
     })
 }
 function creatItemList(i = 1){
@@ -59,17 +68,17 @@ function creatItemList(i = 1){
     itemObj['itemPage' + i].map(item => {
         const creatElem = document.createElement('a');
         creatElem.dataset.id = item.id;
-        creatElem.dataset.catigory = item.catigory
+        creatElem.dataset.catigory = item.category
         creatElem.classList.add('item');
         creatElem.href = 'move.html';
         creatElem.innerHTML = `
         <div class="item_img">
-            <img src="${item.img}" alt="">
+            <img src="${item.cardImg}" alt="">
         </div>
         <div class="item_content">
             <div class="item_con-title">${item.title}</div>
             <div class="item_con-dp">
-            <p class="item_con-genre">${item.genres}</p>
+            <p class="item_con-genre">${item.genre}</p>
             <b class="item_con-year">${item.year}</b>
             </div> 
         </div>
@@ -89,12 +98,10 @@ function creatPageNumber(length){
     }
 }
 creatSlaydCard(localStorage.getItem('catigory'));
-itemParsePages(localStorage.getItem('catigory'));
+itemParsePages(localStorage.getItem('catigory'), localStorage.getItem('genre'));
 creatItemList()
 const itemObjLength = Object.keys(itemObj).length;
 creatPageNumber(itemObjLength)
-
-
 
 
 
@@ -103,10 +110,13 @@ const slaydCards = document.querySelectorAll('.slayd_card')
 const navSearchLink = document.querySelector('.nav_search-link');
 const navbarInput = document.querySelector('.navbar_input');
 const navLinks = document.querySelectorAll('.nav_links');
+const genreBtn = document.querySelectorAll('.genre_btn');
 const burger = document.querySelector('.burger');
 const navbarMobileContent = document.querySelector('.navbar_mobile-content');
 const pageBtnPlus = document.querySelector('.page_btn-plus');
 const pageBtnMinus = document.querySelector('.page_btn-minus');
+const filterContent = document.querySelector('.filter_content');
+const filterBtn = document.querySelector('.filter_btn');
 // 
 let countPageii = 1
 
@@ -118,10 +128,13 @@ navSearchLink.addEventListener('click', () => {
 navLinks.forEach(link =>{
     link.addEventListener('click',pullDataCatigory)
 })
+genreBtn.forEach(btn =>{
+    btn.addEventListener('click', pullDataGenre)
+})
 burger.addEventListener('click',() =>{
     navbarMobileContent.classList.toggle('nav_mobile-active')
 })
-pageBtnPlus.addEventListener('click',() => {
+pageBtnPlus.addEventListener('click',() =>{
     if(countPageii >= itemObjLength){
         countPageii = 1
         return creatItemList(countPageii)
@@ -129,13 +142,16 @@ pageBtnPlus.addEventListener('click',() => {
     countPageii++
     creatItemList(countPageii)
 })
-pageBtnMinus.addEventListener('click',() => {
+pageBtnMinus.addEventListener('click',() =>{
     if(countPageii <= 1){
         countPageii = itemObjLength
         return creatItemList(countPageii)
     }
     countPageii--
     creatItemList(countPageii)
+})
+filterBtn.addEventListener('click', () =>{
+    filterContent.classList.toggle('filter_content-active')
 })
 
 // function
@@ -150,7 +166,12 @@ function eventSlayder(slaydBoxCards) {
     })
 }
 function pullDataCatigory(){
+    localStorage.setItem('catigory', this.dataset.catigory);
+    localStorage.setItem('genre','');
+}
+function pullDataGenre(){
     localStorage.setItem('catigory', this.dataset.catigory)
+    localStorage.setItem('genre', this.dataset.genre)
 }
 function parseCard(){
     let catigory = this.dataset.catigory
