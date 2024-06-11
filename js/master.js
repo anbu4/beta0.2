@@ -44,7 +44,7 @@ function itemParsePages(catigory, genre){
 
     if(genre == '' ||genre == null){
         data[catigory].forEach(item=>{
-            if(itemObj['itemPage'+count].length >= 4){
+            if(itemObj['itemPage'+count].length >= 20){
                 count++
                 itemObj['itemPage'+count] = []
             }
@@ -55,22 +55,25 @@ function itemParsePages(catigory, genre){
 
     data[catigory].forEach(item=>{
         let v = item.genre.find(el=>el==genre);
-        if(itemObj['itemPage'+count].length >= 4){
+        if(itemObj['itemPage'+count].length >= 16){
             count++
             itemObj['itemPage'+count] = []
         }
         if(v){itemObj['itemPage'+count].push(item)}
     })
 }
-function creatItemList(i = 1){
+function creatItemList(i){
+    if(i==''){i=1}
     const itemContainer = document.querySelector('.item_container');
     itemContainer.innerHTML = ''
     itemObj['itemPage' + i].map(item => {
+        // item
         const creatElem = document.createElement('a');
         creatElem.dataset.id = item.id;
         creatElem.dataset.catigory = item.category
         creatElem.classList.add('item');
         creatElem.href = 'move.html';
+        let genre = item.genre.toString().replaceAll(",",",  ")
         creatElem.innerHTML = `
         <div class="item_img">
             <img src="${item.cardImg}" alt="">
@@ -78,30 +81,46 @@ function creatItemList(i = 1){
         <div class="item_content">
             <div class="item_con-title">${item.title}</div>
             <div class="item_con-dp">
-            <p class="item_con-genre">${item.genre}</p>
+            <p class="item_con-genre">${genre}</p>
             <b class="item_con-year">${item.year}</b>
             </div> 
         </div>
         `;
         creatElem.addEventListener('click', parseCard)
+        // episodes
+        if(item.episodes){
+            const episodeNum = document.createElement('div')
+            episodeNum.classList.add('item_series')
+            // episodeNum.innerHTML = item.episodes + ' series';
+            episodeNum.innerHTML = `<span>${item.episodes}</span>series`;
+            creatElem.append(episodeNum)
+        }
         itemContainer.append(creatElem)
     })
+
+   
 }
 function creatPageNumber(length){
     const pageControlsNum = document.querySelector('.page_controls-num');
+    const pageNumLocal = +localStorage.getItem('page');
     for(let num = 1;num<=length;num++){
-        const itemNum = document.createElement('div');
+        const itemNum = document.createElement('a');
+        itemNum.href = 'master.html'
         itemNum.dataset.pageid = num;
         itemNum.innerHTML = num;
-        itemNum.addEventListener('click',itemNumPageEvent);
+        itemNum.addEventListener('click', itemNumPageEvent);
         pageControlsNum.append(itemNum)
+        if(num == pageNumLocal || num == 1 && pageNumLocal == 0){
+            itemNum.classList.add('active_page')
+        }
     }
 }
 creatSlaydCard(localStorage.getItem('catigory'));
 itemParsePages(localStorage.getItem('catigory'), localStorage.getItem('genre'));
-creatItemList()
+creatItemList(+localStorage.getItem('page'))
 const itemObjLength = Object.keys(itemObj).length;
 creatPageNumber(itemObjLength)
+localStorage.setItem('page','')
 
 
 
@@ -135,20 +154,19 @@ burger.addEventListener('click',() =>{
     navbarMobileContent.classList.toggle('nav_mobile-active')
 })
 pageBtnPlus.addEventListener('click',() =>{
-    if(countPageii >= itemObjLength){
-        countPageii = 1
-        return creatItemList(countPageii)
+    let pageNum = ++document.querySelector('.active_page').dataset.pageid;
+    if(pageNum > itemObjLength){
+       pageNum = 1;
     }
-    countPageii++
-    creatItemList(countPageii)
+    localStorage.setItem('page',pageNum)
+
 })
 pageBtnMinus.addEventListener('click',() =>{
-    if(countPageii <= 1){
-        countPageii = itemObjLength
-        return creatItemList(countPageii)
+    let pageNum = --document.querySelector('.active_page').dataset.pageid;
+    if(pageNum <= 0){
+       pageNum = itemObjLength;
     }
-    countPageii--
-    creatItemList(countPageii)
+    localStorage.setItem('page',pageNum)
 })
 filterBtn.addEventListener('click', () =>{
     filterContent.classList.toggle('filter_content-active')
@@ -173,6 +191,7 @@ function pullDataGenre(){
     if(this.dataset.catigory == undefined){
         return localStorage.setItem('genre', this.dataset.genre)
     }
+    localStorage.setItem('genre', this.dataset.genre)
     localStorage.setItem('catigory', this.dataset.catigory)
 }
 function parseCard(){
@@ -182,7 +201,7 @@ function parseCard(){
     localStorage.setItem('moveItem',JSON.stringify(value))
 }
 function itemNumPageEvent(){
-   creatItemList(+this.dataset.pageid)
+   localStorage.setItem('page', this.dataset.pageid)
 }
 
 
